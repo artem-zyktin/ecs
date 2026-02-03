@@ -24,6 +24,11 @@ project "ecs"
 		"make-project.lua"
 	}
 
+	filter "system:windows"
+		files {
+			"make-project.bat"
+		}
+
 	filter "configurations:debug"
 		defines { "_DEBUG" }
 		symbols "On"
