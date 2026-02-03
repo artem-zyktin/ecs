@@ -13,6 +13,8 @@ project "ecs"
 	targetdir "bin/%{cfg.system}/%{cfg.buildcfg}/output"
 	objdir    "bin/%{cfg.system}/%{cfg.buildcfg}/intermediate"
 
+	flags { "NoPCH" }
+
 	includedirs { "src" }
 
 	files {
