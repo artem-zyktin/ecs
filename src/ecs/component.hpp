@@ -84,6 +84,6 @@ private:
 	size_type size_ = 0;
 };
 
-#include "component_impl.hpp"
-
 } // namespace ecs
+
+#include "component_impl.hpp"
