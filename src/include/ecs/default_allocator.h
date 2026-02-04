@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ecs/std_compotible_allocator_concept.hpp"
+#include "ecs/std_compotible_allocator_concept.h"
 
 #include <cstddef>
 #include <type_traits>

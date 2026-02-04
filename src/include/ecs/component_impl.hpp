@@ -4,13 +4,13 @@
 #include <memory>
 #include <ranges>
 
-#include "ecs/component.hpp"
+#include "ecs/component.h"
 
 namespace ecs
 {
 
 template<typename T>
-component<T>::component()
+component<T>::component() noexcept
 {
 	std::fill(dense_entity_.begin(), dense_entity_.end(), INVALID_ENTITY_ID);
 	std::fill(sparse_.begin(), sparse_.end(), INVALID_INDEX);

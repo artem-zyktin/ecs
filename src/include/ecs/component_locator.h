@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ecs/component_id.h"
-#include "ecs/component.hpp"
-#include "ecs/std_compotible_allocator_concept.hpp"
-#include "ecs/default_allocator.hpp"
+#include "ecs/component.h"
+#include "ecs/std_compotible_allocator_concept.h"
+#include "ecs/default_allocator.h"
 
 #include <cstdint>
 #include <limits>
