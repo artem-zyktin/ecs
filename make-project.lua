@@ -1,3 +1,5 @@
+include "scripts/postbuild.lua"
+
 workspace "ecs"
 	location "build/"
 	architecture "x86_64"
@@ -13,16 +15,26 @@ project "ecs"
 	targetdir "bin/%{cfg.system}/%{cfg.buildcfg}/output"
 	objdir    "bin/%{cfg.system}/%{cfg.buildcfg}/intermediate"
 
-	flags { "NoPCH" }
+	enablepch "Off"
 
-	includedirs { "src" }
+	includedirs { "src/include" }
 
+	-- source files
 	files {
-		"src/ecs/**.h",
-		"src/ecs/**.hpp",
-		"src/ecs/**.cpp",
-		"make-project.lua"
+		"src/sources/**.cpp",
+		"src/sources/**.h",
+		"src/sources/**.hpp",
+		"src/include/ecs/**.h",
+		"src/include/ecs/**.hpp"
 	}
+
+	-- project files
+	files {
+		"make-project.lua",
+		"scripts/postbuild.lua"
+	}
+	
+	postbuild()
 
 	filter "system:windows"
 		files {
@@ -33,7 +45,7 @@ project "ecs"
 		defines { "_DEBUG" }
 		symbols "On"
 
-	filter "configurations:relase"
+	filter "configurations:release"
 		defines { "NDEBUG" }
 		optimize "Speed"
 		symbols "On"
