@@ -17,9 +17,9 @@ function postbuild()
 	postbuildcommands {
 		"{RMDIR} " .. install_dir,
 		"{MKDIR} " .. install_dir,
-        "{MKDIR} " .. install_include_dir,
-        "{MKDIR} " .. install_lib_dir,
-		'{COPY} "../src/ecs/include/" "'   .. install_include_dir .. '"',
+		"{MKDIR} " .. install_include_dir,
+		"{MKDIR} " .. install_lib_dir,
+		'{COPYDIR} "../src/include/" "'   .. install_include_dir .. '"',
 		'{COPYFILE} "%{cfg.buildtarget.abspath}" "' .. install_lib_dir .. '"'
 	}
 end
