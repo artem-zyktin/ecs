@@ -12,6 +12,48 @@
 namespace ecs
 {
 
+/// component_locator is NOT thread safe during registration phase.
+///
+/// Two-phase usage model:
+///
+/// Phase 1: Registration (NOT thread-safe)
+///     - All component types must be registered before use
+///     - Registration must complete in a single thread
+///     - No concurrent calls to reg() allowed
+///
+/// Phase 2: Runtime (thread-safe for reads)
+///     - After registration phase, only get() operations are allowed
+///     - Multiple threads can concurrently call get()
+///     - No modifications to registered components allowed via locator
+///
+/// Ownership:
+///     - component_locator owns all registered component instances
+///     - Components are destroyed when locator is destroyed
+///     - Component lifetime ends when locator lifetime ends
+///
+/// Usage example:
+///     // Phase 1: Registration (single thread)
+/// 	struct velocity : public component<vec3f> {};
+/// 	struct position : public component<vec3f> {};
+///     locator.reg<velocity>();
+///     locator.reg<position>();
+///     
+///     // Phase 2: Runtime (multiple threads)
+///     velocity* vel = locator.get<velocity>(); // thread-safe
+///     position* pos = locator.get<position>(); // thread-safe
+///
+/// Incorrect usage:
+///     Thread 1: locator.reg<velocity>();
+///     Thread 2: locator.reg<position>(); // ERROR: concurrent registration
+///     
+///     // Mixing phases
+///     Thread 1: locator.get<velocity>();
+///     Thread 2: locator.reg<health>(); // ERROR: registration during runtime
+///
+/// Component types:
+///     - Each component type gets unique ID at registration
+///     - Maximum types: MAX_COMPONENT_ID
+///     - ID assignment is sequential and permanent
 
 struct component_locator
 {
