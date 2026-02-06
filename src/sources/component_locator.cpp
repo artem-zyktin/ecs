@@ -5,15 +5,19 @@
 namespace ecs
 {
 
-component_locator::~component_locator()
+component_id component_locator::last_id_ = INVALID_COMPONENT_ID;
+
+component_locator::~component_locator() noexcept
 {
-	for (storage_t& item : components_)
+	for (size_type i = 0; i < MAX_COUNT; ++i)
 	{
-		if (item.destroy && item.obj)
+		auto& storage = container_[i];
+
+		if (storage.ptr && storage.deleter)
 		{
-			item.destroy(item.obj);
-			item.obj = nullptr;
-			item.destroy = nullptr;
+			storage.deleter(storage.ptr);
+			storage.ptr = nullptr;
+			storage.deleter = nullptr;
 		}
 	}
 }

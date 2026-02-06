@@ -1,68 +1,57 @@
 #pragma once
 
-#include "ecs/component_id.h"
-#include "ecs/component.h"
 #include "ecs/std_compotible_allocator_concept.h"
 #include "ecs/default_allocator.h"
+#include "ecs/component_id.h"
+#include "ecs/component.h"
 
 #include <cstdint>
-#include <limits>
-#include <type_traits>
 #include <array>
-#include <atomic>
+#include <type_traits>
 
 namespace ecs
 {
 
-class component_locator
-{
-public:
-	using size_type = uint32_t;
 
-	static constexpr size_type MAX_COMPONENT_COUNT = size_type(MAX_COMPONENT_ID);
+struct component_locator
+{
+	using size_type = std::remove_cv_t<decltype(MAX_COMPONENT_ID)>;
+	static constexpr size_type MAX_COUNT = MAX_COMPONENT_ID;
 
 	component_locator() noexcept = default;
-	~component_locator();
+	~component_locator() noexcept;
 
 	component_locator(const component_locator&) = delete;
 	component_locator& operator=(const component_locator&) = delete;
-	component_locator(component_locator&&) = delete;
-	component_locator& operator=(component_locator&&) = delete;
 
-	/// <summary>
-	/// Not thread safe - not register components in parallel
-	/// </summary>
-	template<typename T, template<typename> typename Allocator = default_allocator>
-	requires std_compatible_allocator<component<T>, Allocator>
-	component<T>* reg() noexcept;
+	component_locator(component_locator&&) noexcept = default;
+	component_locator& operator=(component_locator&&) noexcept = default;
 
-	template<typename T, template<typename> typename Allocator = default_allocator>
-	requires std_compatible_allocator<component<T>, Allocator>
-	component<T>* get() const noexcept;
+	template<typename component_t, template<typename> typename allocator = default_allocator>
+	requires std_compatible_allocator<component_t, allocator>
+	component_t* reg() noexcept;
+
+	template<typename component_t>
+	component_t* get() const noexcept;
 
 private:
+	static component_id last_id_;
 
-	struct storage_t
+	template<typename component_t>
+	static component_id& get_component_id_() noexcept;
+
+	template<typename component_t>
+	static component_id ensure_component_id_() noexcept;
+
+	struct _erasure_storage
 	{
-		void* obj = nullptr;
-		void (*destroy)(void*) = nullptr;
+		void* ptr = nullptr;
+		void (*deleter)(void*) = nullptr;
 	};
 
-	using component_storage_t = std::array<storage_t, MAX_COMPONENT_COUNT>;
-
-	mutable component_id next_component_id_ = {0};
-	component_storage_t components_ = {};
-
-	template<typename C>
-	component_id& type_id_storage_() const noexcept;
-
-	template<typename C>
-	component_id ensure_component_id_() const noexcept;
-
-	template<typename C>
-	component_id get_existing_component_id_() const noexcept;
+	std::array<_erasure_storage, MAX_COUNT> container_ = {};
 };
 
-} // namaspace ecs
+} // namespace ecs
 
-#include "component_locator_impl.hpp"
+#include "ecs/component_locator_impl.hpp"

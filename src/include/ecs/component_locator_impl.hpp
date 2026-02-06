@@ -5,100 +5,93 @@
 namespace ecs
 {
 
-template<typename T, template<typename> typename Allocator>
-requires std_compatible_allocator<component<T>, Allocator>
-inline component<T>* component_locator::reg() noexcept
+template<typename T>
+inline component_id& component_locator::get_component_id_() noexcept
 {
-	using component_t = component<T>;
-	using allocator_t = Allocator<component_t>;
-
-	auto idx = ensure_component_id_<component_t>();
-
-	if (idx == INVALID_COMPONENT_ID)
-	{
-		return nullptr;
-	}
-
-	if (components_[idx].obj != nullptr)
-	{
-		return static_cast<component_t*>(components_[idx].obj);
-	}
-
-	allocator_t allocator {};
-	component_t* ptr = allocator.allocate(1);
-
-	if (!ptr)
-	{
-		return nullptr;
-	}
-		
-	ptr = std::construct_at(ptr);
-
-	storage_t storage =
-	{
-		static_cast<void*>(ptr),
-		+[](void* obj)
-		{
-			auto* p = static_cast<component_t*>(obj);
-			std::destroy_at(p);
-			allocator_t alloc{};
-			alloc.deallocate(p, 1);
-		}
-	};
-
-	components_[idx] = storage;
-
-	return ptr;
+    static component_id id = INVALID_COMPONENT_ID;
+    return id;
 }
 
-template<typename T, template<typename> typename Allocator>
-requires std_compatible_allocator<component<T>, Allocator>
-inline component<T>* component_locator::get() const noexcept
+template<typename component_t>
+inline component_id component_locator::ensure_component_id_() noexcept
 {
-	using component_t = component<T>;
+    component_id& id = get_component_id_<component_t>();
 
-	auto idx = get_existing_component_id_<component_t>();
+    if (id != INVALID_COMPONENT_ID)
+    {
+        return INVALID_COMPONENT_ID;
+    }
 
-	if (idx == INVALID_COMPONENT_ID)
-	{
-		return nullptr;
-	}
+    component_id new_id = last_id_;
+    ++new_id;
 
-	return static_cast<component_t*>(components_[idx].obj);
+    if (new_id >= MAX_COUNT)
+    {
+        return INVALID_COMPONENT_ID;
+    }
+
+    id = new_id;
+    last_id_ = id;
+
+    return id;
 }
 
-template<typename C>
-inline component_id& component_locator::type_id_storage_() const noexcept
+template<typename component_t, template<typename> typename allocator>
+requires std_compatible_allocator<component_t, allocator>
+inline component_t* component_locator::reg() noexcept
 {
-	static component_id id = INVALID_COMPONENT_ID;
-	return id;
+	using allocator_t = allocator<component_t>;
+
+    component_id id = ensure_component_id_<component_t>();
+
+    if (id == INVALID_COMPONENT_ID)
+    {
+        return nullptr;
+    }
+
+    allocator_t alloc = {};
+    component_t* ptr = alloc.allocate(1);
+
+    if (!ptr)
+    {
+        return nullptr;
+    }
+
+    ptr = std::construct_at(ptr);
+
+    _erasure_storage storage =
+    {
+        static_cast<void*>(ptr),
+        +[](void* p) // deleter
+        {
+            component_t* ptr = static_cast<component_t*>(p);
+            std::destroy_at(ptr);
+
+            allocator_t alloc = {};
+            alloc.deallocate(ptr, 1);
+        }
+    };
+    container_[id] = storage;
+
+    return ptr;
 }
 
-template<typename C>
-inline component_id component_locator::ensure_component_id_() const noexcept
+template<typename component_t>
+inline component_t* component_locator::get() const noexcept
 {
-	auto& id = type_id_storage_<C>();
+    component_id id = get_component_id_<component_t>();
 
-	if (id != INVALID_COMPONENT_ID)
-	{
-		return id;
-	}
+    if (id == INVALID_COMPONENT_ID)
+    {
+        return nullptr;
+    }
 
-	if (next_component_id_ >= MAX_COMPONENT_COUNT)
-	{
-		return INVALID_COMPONENT_ID;
-	}
+    if (container_[id].ptr == nullptr)
+    {
+        return nullptr;
+    }
 
-	auto new_id = next_component_id_++;
-	id = new_id;
-
-	return id;
-}
-
-template<typename C>
-inline component_id component_locator::get_existing_component_id_() const noexcept
-{
-	return type_id_storage_<C>();
+    return static_cast<component_t*>(container_[id].ptr);
 }
 
 } // namespace ecs
