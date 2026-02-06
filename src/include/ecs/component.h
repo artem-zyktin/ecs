@@ -11,6 +11,33 @@
 namespace ecs
 {
 
+/// component is NOT thread safe.
+///
+/// Ownership model:
+///     One thread owns one component type and is the only writer.
+///
+/// Allowed:
+///     Different threads operate on different component types.
+///
+/// Forbidden:
+///     - Multiple threads accessing the same component<T>
+///       when at least one thread performs modifications.
+///     - Reading components while another thread calls
+///       Emplace, Set or Remove.
+///     - Keeping pointers/references across modification phases.
+/// 
+/// If you want to use one thread as writer and multiple as readers - separate writing and reading phases
+/// 
+/// Incorrect usage:
+///     thread 1 -> component A, component B, component C
+///     thread 2 -> component A, component B, component C
+///     thread 3 -> component A, component B, component C
+/// 
+/// Correct usage:
+///     thread 1 -> component A
+///     thread 2 -> component B
+///     thread 3 -> component C
+
 template<typename T>
 struct component
 {
