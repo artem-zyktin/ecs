@@ -12,11 +12,11 @@ namespace ecs
 {
 
 template<typename T>
-class component
+struct component
 {
 	static_assert(std::is_nothrow_move_constructible_v<T>);
 	static_assert(std::is_nothrow_move_assignable_v<T>);
-public:
+
 	using value_type = std::remove_cvref_t<T>;
 	using pointer_type = value_type *;
 	using const_pointer_type = value_type const *;
