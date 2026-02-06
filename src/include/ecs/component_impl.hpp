@@ -56,7 +56,11 @@ requires std::is_nothrow_constructible_v<T, arg_t...>
 	}
 	else
 	{
-		ptr = set(id, value_type(std::forward<arg_t>(arg)...));
+		ptr = get(id);
+		if (ptr) {
+			*ptr = std::move_if_noexcept(value_type(std::forward<arg_t>(arg)...));
+		}
+		return ptr;
 	}
 
 	return ptr;
