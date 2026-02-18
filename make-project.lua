@@ -38,7 +38,17 @@ project "ecs"
 
 	filter "system:windows"
 		files {
-			"make-project.bat"
+			"make-project-windows.bat"
+		}
+
+	filter "system:linux"
+		files {
+			"make-project-linux.sh"
+		}
+
+	filter "system:macosx"
+		files {
+			"make-project-macos.sh"
 		}
 
 	filter "configurations:debug"
