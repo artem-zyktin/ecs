@@ -1,6 +1,7 @@
 local install_dir = "../bin/%{cfg.system}/%{cfg.buildcfg}/install"
 local install_include_dir = install_dir .. "/include"
 local install_lib_dir = install_dir .. "/lib"
+local license_file = "../LICENSE.utf8.txt"
 
 local premake_cmd
 local host_os = os.host()
@@ -20,7 +21,7 @@ function postbuild()
 		"{MKDIR} " .. install_include_dir,
 		"{MKDIR} " .. install_lib_dir,
 		'{COPYDIR} "../src/include/" "'   .. install_include_dir .. '"',
+		'{COPYFILE} "' .. license_file .. '" "' .. install_dir .. '"',
 		'{COPYFILE} "%{cfg.buildtarget.abspath}" "' .. install_lib_dir .. '"'
 	}
 end
-
