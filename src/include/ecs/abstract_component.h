@@ -1,21 +1,18 @@
 #pragma once
 
 #include "ecs/entity_id.h"
+#include "ecs/component_value_concept.h"
 
 #include <type_traits>
-#include <iterator>
 #include <limits>
 #include <array>
 
 namespace ecs
 {
 
-template<typename T>
+template<component_value T>
 struct abstract_component
 {
-	static_assert(std::is_nothrow_move_constructible_v<T>);
-	static_assert(std::is_nothrow_move_assignable_v<T>);
-
 	using value_type		 = std::remove_cvref_t<T>;
 	using ref_type			 = value_type &;
 	using const_ref_type	 = value_type const &;

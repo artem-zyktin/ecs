@@ -7,20 +7,20 @@
 namespace ecs
 {
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::abstract_component() noexcept
 {
 	std::ranges::fill(id_of_index_, INVALID_ENTITY_ID);
 	std::ranges::fill(index_of_id_, INVALID_INDEX);
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::~abstract_component() noexcept
 {
 	std::destroy_n(get_(0), size_);
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::pointer_type abstract_component<T>::set(entity_id id, value_type&& value) noexcept
 {
 	if (!entity_id_is_valid_(id))
@@ -53,7 +53,7 @@ inline abstract_component<T>::pointer_type abstract_component<T>::set(entity_id 
 	return ptr;
 }
 
-template<typename T>
+template<component_value  T>
 inline abstract_component<T>::pointer_type abstract_component<T>::set(entity_id id, const value_type& value) noexcept
 requires std::is_nothrow_copy_constructible_v<value_type>
 {
@@ -87,7 +87,7 @@ requires std::is_nothrow_copy_constructible_v<value_type>
 	return ptr;
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::const_pointer_type abstract_component<T>::get(entity_id id) const noexcept
 {
 	if (!entity_id_is_valid_(id))
@@ -105,7 +105,7 @@ inline abstract_component<T>::const_pointer_type abstract_component<T>::get(enti
 	return get_(idx);
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::pointer_type abstract_component<T>::get(entity_id id) noexcept
 {
 	if (!entity_id_is_valid_(id))
@@ -123,7 +123,7 @@ inline abstract_component<T>::pointer_type abstract_component<T>::get(entity_id 
 	return get_(idx);
 }
 
-template<typename T>
+template<component_value T>
 inline void abstract_component<T>::remove(entity_id id) noexcept
 {
 	if (empty())
@@ -163,7 +163,7 @@ inline void abstract_component<T>::remove(entity_id id) noexcept
 	--size_;
 }
 
-template<typename T>
+template<component_value T>
 inline bool abstract_component<T>::has(entity_id id, const_pointer_type& out) const noexcept
 {
 	if (empty())
@@ -190,7 +190,7 @@ inline bool abstract_component<T>::has(entity_id id, const_pointer_type& out) co
 	return true;
 }
 
-template<typename T>
+template<component_value T>
 inline bool abstract_component<T>::has(entity_id id, pointer_type& out) noexcept
 {
 	if (empty())
@@ -217,7 +217,7 @@ inline bool abstract_component<T>::has(entity_id id, pointer_type& out) noexcept
 	return true;
 }
 
-template<typename T>
+template<component_value T>
 inline bool abstract_component<T>::has(entity_id id) noexcept
 {
 	if (empty())
@@ -240,7 +240,7 @@ inline bool abstract_component<T>::has(entity_id id) noexcept
 	return true;
 }
 
-template<typename T>
+template<component_value T>
 inline entity_id abstract_component<T>::get_id(index_type idx) const noexcept
 {
 	if (!index_is_valid_(idx))
@@ -251,103 +251,103 @@ inline entity_id abstract_component<T>::get_id(index_type idx) const noexcept
 	return id_of_index_[idx];
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::iterator abstract_component<T>::begin() noexcept
 {
 	return get_(0);
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::iterator abstract_component<T>::end() noexcept
 {
 	return get_(0) + size_;
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::const_iterator abstract_component<T>::begin() const noexcept
 {
 	return cbegin();
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::const_iterator abstract_component<T>::end() const noexcept
 {
 	return cend();
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::const_iterator abstract_component<T>::cbegin() const noexcept
 {
 	return get_(0);
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::const_iterator abstract_component<T>::cend() const noexcept
 {
 	return get_(0) + size_;
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::reverse_iterator abstract_component<T>::rbegin() noexcept
 {
 	return reverse_iterator(end());
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::reverse_iterator abstract_component<T>::rend() noexcept
 {
 	return reverse_iterator(begin());
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::const_reverse_iterator abstract_component<T>::rbegin() const noexcept
 {
 	return crbegin();
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::const_reverse_iterator abstract_component<T>::rend() const noexcept
 {
 	return crend();
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::const_reverse_iterator abstract_component<T>::crbegin() const noexcept
 {
 	return reverse_iterator(cend());
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::const_reverse_iterator abstract_component<T>::crend() const noexcept
 {
 	return reverse_iterator(cbegin());
 }
 
-template<typename T>
+template<component_value T>
 inline bool abstract_component<T>::index_is_valid_(index_type idx) noexcept
 {
 	return idx != INVALID_INDEX && idx < MAX_SIZE;
 }
 
-template<typename T>
+template<component_value T>
 inline bool abstract_component<T>::entity_id_is_valid_(entity_id id) noexcept
 {
 	return id != INVALID_ENTITY_ID && id < MAX_ENTITY_COUNT;
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::const_pointer_type abstract_component<T>::get_(index_type idx) const noexcept
 {
 	return std::addressof(container_[idx].data);
 }
 
-template<typename T>
+template<component_value T>
 inline abstract_component<T>::pointer_type abstract_component<T>::get_(index_type idx) noexcept
 {
 	return std::addressof(container_[idx].data);
 }
 
-template<typename T>
+template<component_value T>
 template<typename... arg_t>
 inline abstract_component<T>::pointer_type abstract_component<T>::emplace(entity_id id, arg_t&&... arg) noexcept
 requires std::is_nothrow_constructible_v<abstract_component<T>::value_type, arg_t...>
