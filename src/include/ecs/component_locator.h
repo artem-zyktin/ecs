@@ -20,6 +20,9 @@ struct component_locator
 	component_locator() noexcept = default;
 	~component_locator() noexcept;
 
+	component_locator(const component_locator&) = delete;
+	component_locator& operator=(const component_locator&) = delete;
+
 	template<ecs_component T, template<typename> typename Allocator = default_allocator>
 	requires allocator_concept<Allocator, T>
 	T* add() noexcept;
