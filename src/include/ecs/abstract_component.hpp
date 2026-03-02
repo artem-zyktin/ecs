@@ -3,6 +3,7 @@
 #include "ecs/abstract_component.h"
 
 #include <algorithm>
+#include <memory>
 
 namespace ecs
 {
@@ -350,7 +351,7 @@ inline abstract_component<T>::pointer_type abstract_component<T>::get_(index_typ
 template<component_value T>
 template<typename... arg_t>
 inline abstract_component<T>::pointer_type abstract_component<T>::emplace(entity_id id, arg_t&&... arg) noexcept
-requires std::is_nothrow_constructible_v<abstract_component<T>::value_type, arg_t...>
+requires std::is_nothrow_constructible_v<value_type, arg_t...>
 {
 	if (!entity_id_is_valid_(id))
 	{
