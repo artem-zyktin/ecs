@@ -18,11 +18,20 @@ inline T* component_locator::add() noexcept
 		return nullptr;
 	}
 
-	T* p = allocator_t{}.allocate(1);
-
-	if (p == nullptr)
+	T* p;
+	if (container_[idx].p)
 	{
-		return nullptr;
+		p = static_cast<T*>(container_[idx].p);
+		std::destroy_at(p);
+	}
+	else
+	{
+		p = allocator_t{}.allocate(1);
+
+		if (p == nullptr)
+		{
+			return nullptr;
+		}
 	}
 
 	_type_erasure_storage storage {};
@@ -106,7 +115,7 @@ inline T* component_locator::get() const noexcept
 }
 
 template<ecs_component T>
-inline component_locator::component_index& component_locator::type_index() noexcept
+inline component_locator::component_index& component_locator::type_index() const noexcept
 {
 	static component_index index = INVALID_COMPONENT_INDEX_;
 	return index;
