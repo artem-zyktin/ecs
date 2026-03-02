@@ -8,9 +8,9 @@ namespace ecs
 {
 
 template<typename T, typename... component_t>
-concept is_ecs_system = requires (T system, component_t*... ptrs)
+concept is_ecs_system = requires (T system, float dt, component_t*... ptrs)
 {
-	system.proc(ptrs...);
+	system.proc(dt, ptrs...);
 };
 
 
@@ -23,12 +23,12 @@ struct system_base
 
 protected:
 
-	virtual void proc(component_t*... ptr) = 0;
+	virtual void proc(float delta_time, component_t*... ptr) = 0;
 
 private:
 	std::tuple<component_t*...> components_;
 };
-
+ 
 } // namespace ecs
 
 #include "ecs/system.hpp"

@@ -10,7 +10,7 @@ inline void ecs::system_base<derived_t, component_t...>::run(float delta_time)
 {
 	std::apply([this](component_t*... ptrs)
 	{
-		static_cast<derived_t*>(this)->proc(ptrs...);
+		static_cast<derived_t*>(this)->proc(delta_time, ptrs...);
 	},
 	components_);
 }
@@ -21,7 +21,5 @@ inline void system_base<derived_t, component_t...>::set(component_t* ...ptrs) no
 {
 	components_ = { ptrs... };
 }
-
-
 
 } // namespace ecs
