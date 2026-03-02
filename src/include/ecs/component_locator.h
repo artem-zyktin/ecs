@@ -56,7 +56,7 @@ private:
 	container_t container_ = {};
 
 	template<ecs_component T>
-	component_index& type_index() noexcept;
+	component_index& type_index() const noexcept;
 
 	template<ecs_component T>
 	component_index acquire_type_index() noexcept;
