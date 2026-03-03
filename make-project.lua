@@ -1,5 +1,6 @@
 include "scripts/postbuild.lua"
 
+
 workspace "ecs"
 	location "build/"
 	architecture "x86_64"
@@ -31,7 +32,8 @@ project "ecs"
 	-- project files
 	files {
 		"make-project.lua",
-		"scripts/postbuild.lua"
+		"scripts/postbuild.lua",
+		"samples/make-project.lua"
 	}
 	
 	postbuild()
@@ -59,3 +61,5 @@ project "ecs"
 		defines { "NDEBUG" }
 		optimize "Speed"
 		symbols "On"
+
+include "samples/make-project.lua"
