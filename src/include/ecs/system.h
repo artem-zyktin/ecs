@@ -15,7 +15,6 @@ concept is_ecs_system = requires (T system, float dt, component_t*... ptrs)
 
 
 template<typename derived_t, ecs_component... component_t>
-requires is_ecs_system<derived_t, component_t...>
 struct system_base
 {
 	void run(float delta_time);
