@@ -12,13 +12,13 @@ project "sample_basic_usage"
 
 	enablepch "Off"
 
-	includedirs { "src/include" }
+	includedirs { "../src/include" }
 	links { "ecs" }
 
 	files {
-		"samples/basic_usage/**.cpp",
-		"samples/basic_usage/**.h",
-		"samples/basic_usage/**.hpp"
+		"basic_usage/**.cpp",
+		"basic_usage/**.h",
+		"basic_usage/**.hpp"
 	}
 
 	filter "configurations:debug"
