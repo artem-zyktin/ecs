@@ -56,7 +56,7 @@ public:
 
 void basic_gameplay_example()
 {
-	std::cout << "\n=== Basic gameplay example ===\n";
+	std::cout << "\n=== Basic gameplay example (tick simulation) ===\n";
 
 	ecs::component_locator world;
 	auto* positions = world.add<position_component>();
@@ -79,14 +79,22 @@ void basic_gameplay_example()
 
 	movement_system move;
 	move.set(positions, velocities);
-	move.run(1.0f);
 
-	for (ecs::entity_id id : { player, enemy })
+	constexpr float delta_time = 0.25f;
+	constexpr int tick_count = 8;
+
+	for (int tick = 1; tick <= tick_count; ++tick)
 	{
-		auto* p = positions->get(id);
-		if (p)
+		move.run(delta_time);
+
+		std::cout << "Tick " << tick << ":\n";
+		for (ecs::entity_id id : { player, enemy })
 		{
-			std::cout << "Entity " << id << " moved to (" << p->x << ", " << p->y << ")\n";
+			auto* p = positions->get(id);
+			if (p)
+			{
+				std::cout << "  Entity " << id << " -> (" << p->x << ", " << p->y << ")\n";
+			}
 		}
 	}
 }
