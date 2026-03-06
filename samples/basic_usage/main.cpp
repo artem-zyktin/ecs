@@ -31,6 +31,29 @@ struct velocity_component final : ecs::abstract_component<velocity>
 {
 };
 
+struct movement_system final : ecs::system_base<movement_system, position_component, velocity_component>
+{
+public:
+	void proc(float delta_time, position_component* positions, velocity_component* velocities) override
+	{
+		if (!positions || !velocities)
+		{
+			return;
+		}
+
+		for (ecs::entity_id id = 1; id < 100; ++id)
+		{
+			auto* p = positions->get(id);
+			auto* v = velocities->get(id);
+			if (p && v)
+			{
+				p->x += v->vx * delta_time;
+				p->y += v->vy * delta_time;
+			}
+		}
+	}
+};
+
 void basic_gameplay_example()
 {
 	std::cout << "\n=== Basic gameplay example ===\n";
@@ -54,14 +77,15 @@ void basic_gameplay_example()
 	positions->set(enemy, position{ 50.0f, 40.0f });
 	velocities->set(enemy, velocity{ -0.5f, 0.2f });
 
+	movement_system move;
+	move.set(positions, velocities);
+	move.run(1.0f);
+
 	for (ecs::entity_id id : { player, enemy })
 	{
 		auto* p = positions->get(id);
-		auto* v = velocities->get(id);
-		if (p && v)
+		if (p)
 		{
-			p->x += v->vx;
-			p->y += v->vy;
 			std::cout << "Entity " << id << " moved to (" << p->x << ", " << p->y << ")\n";
 		}
 	}
